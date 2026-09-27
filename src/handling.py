@@ -1,7 +1,7 @@
 import pandas as pd
 import warnings
 
-from .tradeHandling import _addLong, _addShort, _closeLong, _closeShort, _realizedPnl, _unrealizedPnl
+from .tradeHandling import _addLong, _addShort, _closeLong, _closeShort, _realizedPnl, _unrealizedPnl, _tickTradeData
 
 # helpers
 warningsFed = [] # 
@@ -81,9 +81,11 @@ class Handling:
 
         self.signedDirectionScale = None     # mumbo-jumbo for the total contracts being traded, signed (negative for short, and anagalously positive for long)
         self.entryData            = [[None]] # [[entry_price_one, contracts_one], [entry_price_two, contracts_two]]
+        self.entryIdx             = None     # idx the current trade was opened on
+        self.positionsData        = []       # one row per tick, parallel to self.data: [is_in_trade, unrealized_pnl, entryIdx]
         self._lastRealizedPnl     = 0        # realized pnl of the most recently closed trade
 
-    def tick(self): # call inside of the mainloop
+    def tick(self): # call inside of the mainloop. Position state recorded here is what carried into this tick, marked at this tick's price (orders placed after tick() show up on the next one)
         self.idx += 1
         self.dataAtIdx = next(self._reader).iloc[0]
 
@@ -93,6 +95,7 @@ class Handling:
         _updateHeldData(self.config, self.config.actionAlias, self.dataAtTick.updateAction, self.dataAtIdx[self.config.actionAlias])
 
         self.data.tick()
+        _tickTradeData(self)
 
     # exposed trade handling api
     def addLong(self, contracts):  _addLong(self, contracts)

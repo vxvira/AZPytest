@@ -6,6 +6,7 @@ def _addPosition(handling, contracts, sign):
     if handling.signedDirectionScale is None:
         handling.signedDirectionScale = sign * contracts
         handling.entryData = [[price, contracts]]
+        handling.entryIdx  = handling.idx
     else:
         handling.signedDirectionScale += sign * contracts
         handling.entryData.append([price, contracts])
@@ -30,4 +31,5 @@ def _closePosition(handling, sign):
 
     handling.signedDirectionScale  = None
     handling.entryData             = [[None]]
+    handling.entryIdx              = None
     handling._lastRealizedPnl      = pnl

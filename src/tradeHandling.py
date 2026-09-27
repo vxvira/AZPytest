@@ -26,3 +26,7 @@ def _unrealizedPnl(handling): # pnl of the currently open trade (all of its entr
         pnl  += ticks * tickVal * contracts
 
     return pnl
+
+def _tickTradeData(handling): # record this tick's position state
+    inTrade = handling.signedDirectionScale is not None
+    handling.positionsData.append([inTrade, _unrealizedPnl(handling), handling.entryIdx])
