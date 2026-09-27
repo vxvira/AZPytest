@@ -43,8 +43,37 @@ Every tick is recorded in `handler.data` (price, tsEvent, tsRecv, action lists) 
 
 `src/analytics` has two classes that work on pandas Series:
 
-- `PriceAnalytics(PriceSeries, VolumeSeries=None)`: EMA, SMA, VWAP, on-balance volume, volume profile (with point of control and value area), Bollinger Bands, RSI, MACD, rate of change.
-- `SetAnalytics(Series)`: rolling moving average, z-score, Pearson correlation, tanh, Fisher transform, spread between series.
+### PriceAnalytics(PriceSeries, VolumeSeries=None)
+
+| Method | Returns |
+|---|---|
+| `ManipulatePriceSeries(new)` | swaps the price series |
+| `ManipulateVolumeSeries(new)` | swaps the volume series |
+| `returnExponentialMovingAverage(period)` | Series |
+| `returnSimpleMovingAveraage(period)` | Series |
+| `returnVolumeWeightedAveragePrice()` | Series (needs volume) |
+| `returnOnBalanceVolume()` | Series (needs volume) |
+| `returnVolumeProfile(bins=24, binSize=None)` | DataFrame: `volume` per price level (needs volume) |
+| `returnPointOfControl(bins=24, binSize=None)` | float, the busiest price level (needs volume) |
+| `returnValueArea(bins=24, binSize=None, pct=0.7)` | `(low, high)` floats (needs volume) |
+| `returnBollingerBands(period=20, numStd=2)` | DataFrame: `middle`, `upper`, `lower` |
+| `returnRelativeStrengthIndex(period=14)` | Series |
+| `returnMACD(fast=12, slow=26, signal=9)` | DataFrame: `macd`, `signal`, `histogram` |
+| `returnRateOfChange(period)` | Series |
+
+Volume-dependent methods raise `[fatal]` if no `VolumeSeries` was given.
+
+### SetAnalytics(Series)
+
+| Method | Returns |
+|---|---|
+| `ManipulateSeries(new)` | swaps the series |
+| `returnRollingMovingAverage(period)` | Series |
+| `returnZScore(period=None)` | Series (whole series if no period) |
+| `returnPearsonCorrelation(other, period=None)` | float, or a Series if a period is given |
+| `returnTanh()` | Series |
+| `returnFisherTransform(period=None)` | Series |
+| `returnSpreadBetweenSeries(other)` | Series, `other - Series`; the longer one is trimmed with a warning |
 
 ```python
 import pandas as pd
