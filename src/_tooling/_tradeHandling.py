@@ -30,4 +30,4 @@ def _closePosition(handling, sign):
 
     handling.signedDirectionScale  = None
     handling.entryData             = [[None]]
-    handling._realizedPnlAccum    += pnl
+    handling._lastRealizedPnl      = pnl

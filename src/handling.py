@@ -75,7 +75,7 @@ class Handling:
     
         self.signedDirectionScale = None     # mumbo-jumbo for the total contracts being traded, signed (negative for short, and anagalously positive for long)
         self.entryData            = [[None]] # [[entry_price_one, contracts_one], [entry_price_two, contracts_two]]
-        self._realizedPnlAccum    = 0
+        self._lastRealizedPnl     = 0        # realized pnl of the most recently closed trade
 
     def tick(self): # call inside of the mainloop
         self.dataAtIdx = next(self._reader).iloc[0]
