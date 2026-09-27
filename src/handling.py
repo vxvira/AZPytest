@@ -3,6 +3,17 @@ import warnings
 
 from .tradeHandling import _addLong, _addShort, _closeLong, _closeShort, _realizedPnl, _unrealizedPnl
 
+# helpers
+warningsFed = [] # 
+def _updateHeldData(config, expected, onSet, onSetArg):
+    if expected in config.aliases: onSet(onSetArg)
+
+def _fatalWarn(message):
+    warnings.warn(f"[fatal] {message}")
+    exit()
+def _warn(message):
+    warnings.warn(f"[warn] {message}")
+
 class Configuration:
     def __init__(self):
         self.readFrom   = 1 # what row to start reading from
@@ -25,8 +36,13 @@ class Configuration:
 
     def buildConfig(self):
         self._buildAliases()
-        if self.path == None: print(r"[/!\] Path not specified, exiting"); exit()
+        if self.path not in self.aliases: _fatalWarn("Path not specified!")
 
+        # warnings
+        if self.priceAlias not in self.aliases:   _warn("priceAlias not set")
+        if self.tsEventAlias not in self.aliases: _warn("tsEventAlias not set")
+        if self.tsRecvAlias not in self.aliases:  _warn("tsRecvAlias not set")
+        if self.actionAlias not in self.aliases:  _warn("actionAlias not set") 
 
 class Data:
     def __init__(self):
@@ -40,15 +56,19 @@ class Data:
     def updateTsRecv(self, tsRecv):   self.tsRecv  = tsRecv
     def updateAction(self, action):   self.action  = action 
 
-# private helper
-def _updateHeldData(config, expected, onSet, onSetArg, onNone):
-    if expected in config.aliases: onSet(onSetArg)
-    else: warnings.warn(onNone)
+class DataSeries:
+    def __init__(self, data):
+        self.data = data 
+        self.series = []
+
+    def tick(self):
+        self.series.append(self.data)
 
 class Handling:
     def __init__(self, config):
         self.config = config
-        self.data = Data()
+        self.dataAtTick = Data()
+        self.data = DataSeries()
 
         self.idx = config.readFrom
         self._reader = pd.read_csv(config.path, usecols=config.aliases, chunksize=1, skiprows=range(1, config.readFrom)).__iter__()
@@ -60,14 +80,15 @@ class Handling:
     def tick(self): # call inside of the mainloop
         self.dataAtIdx = next(self._reader).iloc[0]
 
-        _updateHeldData(self.config, self.config.priceAlias, self.data.updatePrice, self.dataAtIdx[self.config.priceAlias], "[-] priceAlias not set")
-        _updateHeldData(self.config, self.config.tsEventAlias, self.data.updateTsEvent, self.dataAtIdx[self.config.tsEventAlias], "[-] tsEventAlias not set")
-        _updateHeldData(self.config, self.config.tsRecvAlias, self.data.updateTsRecv, self.dataAtIdx[self.config.tsRecvAlias], "[-] tsRecvAlias not set")
-        _updateHeldData(self.config, self.config.actionAlias, self.data.updateAction, self.dataAtIdx[self.config.actionAlias], "[-] actionAlias not set")
+        _updateHeldData(self.config, self.config.priceAlias, self.data.updatePrice, self.dataAtIdx[self.config.priceAlias])
+        _updateHeldData(self.config, self.config.tsEventAlias, self.data.updateTsEvent, self.dataAtIdx[self.config.tsEventAlias])
+        _updateHeldData(self.config, self.config.tsRecvAlias, self.data.updateTsRecv, self.dataAtIdx[self.config.tsRecvAlias])
+        _updateHeldData(self.config, self.config.actionAlias, self.data.updateAction, self.dataAtIdx[self.config.actionAlias])
 
+    # exposed trade handling api
     def addLong(self, contracts):  _addLong(self, contracts)
     def addShort(self, contracts): _addShort(self, contracts)
-    def closeLong(self):     _closeLong(self)
-    def closeShort(self):    _closeShort(self)
-    def realizedPnl(self):   return _realizedPnl(self)
-    def unrealizedPnl(self): return _unrealizedPnl(self)
+    def closeLong(self):           _closeLong(self)
+    def closeShort(self):          _closeShort(self)
+    def realizedPnl(self):         return _realizedPnl(self)
+    def unrealizedPnl(self):       return _unrealizedPnl(self)
