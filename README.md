@@ -4,10 +4,16 @@ A small Python backtesting toolkit: replay tick data from a CSV one row at a tim
 
 ## Setup
 
-Requires Python 3 with `pandas` and `numpy` (and `pytest` to run the tests).
+Requires Python 3.10+.
 
 ```
-pip install pandas numpy pytest
+pip install azpytest
+```
+
+To work on it from a clone, install it editable along with `pytest`:
+
+```
+pip install -e . pytest
 ```
 
 ## Usage
