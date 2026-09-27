@@ -1,18 +1,11 @@
 import pandas as pd
-import warnings
 
+from ._tooling._log import warn, fatal
 from .tradeHandling import _addLong, _addShort, _closeLong, _closeShort, _realizedPnl, _unrealizedPnl, _tickTradeData
 
 # helpers
-warningsFed = [] # 
 def _updateHeldData(config, expected, onSet, onSetArg):
     if expected in config.aliases: onSet(onSetArg)
-
-def _fatalWarn(message):
-    warnings.warn(f"[fatal] {message}")
-    exit()
-def _warn(message):
-    warnings.warn(f"[warn] {message}")
 
 class Configuration:
     def __init__(self):
@@ -36,13 +29,13 @@ class Configuration:
 
     def buildConfig(self):
         self._buildAliases()
-        if self.path not in self.aliases: _fatalWarn("Path not specified!")
+        if self.path is None: fatal("path not set")
 
         # warnings
-        if self.priceAlias not in self.aliases:   _warn("priceAlias not set")
-        if self.tsEventAlias not in self.aliases: _warn("tsEventAlias not set")
-        if self.tsRecvAlias not in self.aliases:  _warn("tsRecvAlias not set")
-        if self.actionAlias not in self.aliases:  _warn("actionAlias not set") 
+        if self.priceAlias not in self.aliases:   warn("priceAlias not set")
+        if self.tsEventAlias not in self.aliases: warn("tsEventAlias not set")
+        if self.tsRecvAlias not in self.aliases:  warn("tsRecvAlias not set")
+        if self.actionAlias not in self.aliases:  warn("actionAlias not set") 
 
 class Data:
     def __init__(self):
