@@ -56,34 +56,43 @@ class Data:
     def updateTsRecv(self, tsRecv):   self.tsRecv  = tsRecv
     def updateAction(self, action):   self.action  = action 
 
-class DataSeries:
+class DataSeries: # history of Data, one entry per tick (column-wise)
     def __init__(self, data):
-        self.data = data 
-        self.series = []
+        self.data    = data
+        self.price   = []
+        self.tsEvent = []
+        self.tsRecv  = []
+        self.action  = []
 
     def tick(self):
-        self.series.append(self.data)
+        self.price.append(self.data.price)
+        self.tsEvent.append(self.data.tsEvent)
+        self.tsRecv.append(self.data.tsRecv)
+        self.action.append(self.data.action)
 
 class Handling:
     def __init__(self, config):
-        self.config = config
-        self.dataAtTick = Data()
-        self.data = DataSeries()
+        self.config     = config
+        self.dataAtTick = Data()                    # current tick
+        self.data       = DataSeries(self.dataAtTick) # every tick so far
 
-        self.idx = config.readFrom
+        self.idx     = config.readFrom - 1 # row of the current tick; tick() advances it before reading
         self._reader = pd.read_csv(config.path, usecols=config.aliases, chunksize=1, skiprows=range(1, config.readFrom)).__iter__()
-    
+
         self.signedDirectionScale = None     # mumbo-jumbo for the total contracts being traded, signed (negative for short, and anagalously positive for long)
         self.entryData            = [[None]] # [[entry_price_one, contracts_one], [entry_price_two, contracts_two]]
         self._lastRealizedPnl     = 0        # realized pnl of the most recently closed trade
 
     def tick(self): # call inside of the mainloop
+        self.idx += 1
         self.dataAtIdx = next(self._reader).iloc[0]
 
-        _updateHeldData(self.config, self.config.priceAlias, self.data.updatePrice, self.dataAtIdx[self.config.priceAlias])
-        _updateHeldData(self.config, self.config.tsEventAlias, self.data.updateTsEvent, self.dataAtIdx[self.config.tsEventAlias])
-        _updateHeldData(self.config, self.config.tsRecvAlias, self.data.updateTsRecv, self.dataAtIdx[self.config.tsRecvAlias])
-        _updateHeldData(self.config, self.config.actionAlias, self.data.updateAction, self.dataAtIdx[self.config.actionAlias])
+        _updateHeldData(self.config, self.config.priceAlias, self.dataAtTick.updatePrice, self.dataAtIdx[self.config.priceAlias])
+        _updateHeldData(self.config, self.config.tsEventAlias, self.dataAtTick.updateTsEvent, self.dataAtIdx[self.config.tsEventAlias])
+        _updateHeldData(self.config, self.config.tsRecvAlias, self.dataAtTick.updateTsRecv, self.dataAtIdx[self.config.tsRecvAlias])
+        _updateHeldData(self.config, self.config.actionAlias, self.dataAtTick.updateAction, self.dataAtIdx[self.config.actionAlias])
+
+        self.data.tick()
 
     # exposed trade handling api
     def addLong(self, contracts):  _addLong(self, contracts)

@@ -15,7 +15,7 @@ def _unrealizedPnl(handling): # pnl of the currently open trade (all of its entr
     if handling.signedDirectionScale is None:
         return 0
 
-    currentPrice = handling.data.price
+    currentPrice = handling.dataAtTick.price
     tickSz       = handling.config.tickSz
     tickVal      = handling.config.tickVal
     sign         = 1 if handling.signedDirectionScale > 0 else -1

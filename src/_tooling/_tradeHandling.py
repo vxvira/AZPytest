@@ -1,7 +1,7 @@
 # private helpers
 
 def _addPosition(handling, contracts, sign):
-    price = handling.data.price
+    price = handling.dataAtTick.price
 
     if handling.signedDirectionScale is None:
         handling.signedDirectionScale = sign * contracts
@@ -18,7 +18,7 @@ def _closePosition(handling, sign):
     if sign < 0 and handling.signedDirectionScale >= 0:
         return
 
-    exitPrice = handling.data.price
+    exitPrice = handling.dataAtTick.price
     tickSz    = handling.config.tickSz
     tickVal   = handling.config.tickVal
 
