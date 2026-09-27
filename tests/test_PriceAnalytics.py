@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 from pandas.testing import assert_series_equal
 
-from src.analytics.PriceAnalytics import PriceAnalytics
+from AZPytest.analytics.PriceAnalytics import PriceAnalytics
 
 PRICE  = [100, 102, 105, 103, 101, 101, 104.0]
 VOLUME = [5, 2, 10, 4, 6, 3, 8.0]

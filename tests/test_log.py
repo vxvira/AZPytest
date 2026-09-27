@@ -2,7 +2,7 @@ import logging
 
 import pytest
 
-from src._tooling import _log
+from AZPytest._tooling import _log
 
 def test_warn_logs_at_warning_level(logs):
     _log.warn("something odd")

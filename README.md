@@ -13,7 +13,7 @@ pip install pandas numpy pytest
 ## Usage
 
 ```python
-import src.handling as dh
+import AZPytest.handling as dh
 
 cfg = dh.Configuration()
 cfg.path         = "data.csv"
@@ -41,7 +41,7 @@ Every tick is recorded in `handler.data` (price, tsEvent, tsRecv, action lists) 
 
 ## Analytics
 
-`src/analytics` has two classes that work on pandas Series:
+`AZPytest/analytics` has two classes that work on pandas Series:
 
 ### PriceAnalytics(PriceSeries, VolumeSeries=None)
 
@@ -77,7 +77,7 @@ Volume-dependent methods raise `[fatal]` if no `VolumeSeries` was given.
 
 ```python
 import pandas as pd
-from src.analytics.PriceAnalytics import PriceAnalytics
+from AZPytest.analytics.PriceAnalytics import PriceAnalytics
 
 pa = PriceAnalytics(pd.Series(handler.data.price))
 pa.returnExponentialMovingAverage(20)

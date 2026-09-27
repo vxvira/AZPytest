@@ -4,8 +4,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from src.analytics.PriceAnalytics import PriceAnalytics
-from src.analytics.SetAnalytics import SetAnalytics
+from AZPytest.analytics.PriceAnalytics import PriceAnalytics
+from AZPytest.analytics.SetAnalytics import SetAnalytics
 
 def series(values, index=None): return pd.Series(values, index=index, dtype=float)
 

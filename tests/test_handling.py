@@ -1,6 +1,6 @@
 import pytest
 
-import src.handling as h
+import AZPytest.handling as h
 
 def config(**overrides):
     c = h.Configuration()

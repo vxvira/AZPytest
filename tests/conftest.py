@@ -2,8 +2,8 @@ import logging
 
 import pytest
 
-import src.handling as h
-from src._tooling import _log
+import AZPytest.handling as h
+from AZPytest._tooling import _log
 
 CSV_HEADER = "price,ts_event,ts_recv,action\n"
 
