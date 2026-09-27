@@ -6,8 +6,16 @@ A small Python backtesting toolkit: replay tick data from a CSV one row at a tim
 
 Requires Python 3.10+.
 
+Install from PyPI:
+
 ```
 pip install azpytest
+```
+
+Or straight from GitHub:
+
+```
+pip install git+https://github.com/vxvira/AZPytest.git
 ```
 
 To work on it from a clone, install it editable along with `pytest`:
