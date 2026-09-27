@@ -4,8 +4,8 @@ from ._tooling._log import warn, fatal
 from .tradeHandling import _addLong, _addShort, _closeLong, _closeShort, _realizedPnl, _unrealizedPnl, _tickTradeData
 
 # helpers
-def _updateHeldData(config, expected, onSet, onSetArg):
-    if expected in config.aliases: onSet(onSetArg)
+def _updateHeldData(row, alias, onSet): # skip columns that were never configured (alias is None)
+    if alias is not None: onSet(row[alias])
 
 class Configuration:
     def __init__(self):
@@ -82,10 +82,10 @@ class Handling:
         self.idx += 1
         self.dataAtIdx = next(self._reader).iloc[0]
 
-        _updateHeldData(self.config, self.config.priceAlias, self.dataAtTick.updatePrice, self.dataAtIdx[self.config.priceAlias])
-        _updateHeldData(self.config, self.config.tsEventAlias, self.dataAtTick.updateTsEvent, self.dataAtIdx[self.config.tsEventAlias])
-        _updateHeldData(self.config, self.config.tsRecvAlias, self.dataAtTick.updateTsRecv, self.dataAtIdx[self.config.tsRecvAlias])
-        _updateHeldData(self.config, self.config.actionAlias, self.dataAtTick.updateAction, self.dataAtIdx[self.config.actionAlias])
+        _updateHeldData(self.dataAtIdx, self.config.priceAlias,   self.dataAtTick.updatePrice)
+        _updateHeldData(self.dataAtIdx, self.config.tsEventAlias, self.dataAtTick.updateTsEvent)
+        _updateHeldData(self.dataAtIdx, self.config.tsRecvAlias,  self.dataAtTick.updateTsRecv)
+        _updateHeldData(self.dataAtIdx, self.config.actionAlias,  self.dataAtTick.updateAction)
 
         self.data.tick()
         _tickTradeData(self)
