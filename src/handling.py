@@ -72,8 +72,8 @@ class Handling:
         self.idx     = config.readFrom - 1 # row of the current tick; tick() advances it before reading
         self._reader = pd.read_csv(config.path, usecols=config.aliases, chunksize=1, skiprows=range(1, config.readFrom)).__iter__()
 
-        self.signedDirectionScale = None     # mumbo-jumbo for the total contracts being traded, signed (negative for short, and anagalously positive for long)
-        self.entryData            = [[None]] # [[entry_price_one, contracts_one], [entry_price_two, contracts_two]]
+        self.signedDirectionScale = None     # mumbo-jumbo for the total contracts being traded, signed (negative for short, and anagalously positive for long). addLong/addShort adjust it, so an opposite add shrinks or flips the trade
+        self.entryData            = [[None]] # [[entry_price_one, signed_contracts_one], ...] (positive = long, negative = short)
         self.entryIdx             = None     # idx the current trade was opened on
         self.positionsData        = []       # one row per tick, parallel to self.data: [is_in_trade, unrealized_pnl, entryIdx]
         self._lastRealizedPnl     = 0        # realized pnl of the most recently closed trade
